@@ -16,3 +16,5 @@ On `volume` it writes
 * Volume
 
 
+A lot of useful information has been found in [this discussion on librespot](https://github.com/librespot-org/librespot/issues/1431); in 
+the [shairport-sync metadata reader](https://github.com/mikebrady/shairport-sync-metadata-reader) as well in these [resource files](https://github.com/Clovel/shairport-metadata-reader/tree/dev/resources)
