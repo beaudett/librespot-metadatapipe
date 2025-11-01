@@ -17,4 +17,4 @@ On `volume` it writes
 
 
 A lot of useful information has been found in [this discussion on librespot](https://github.com/librespot-org/librespot/issues/1431); in 
-the [shairport-sync metadata reader](https://github.com/mikebrady/shairport-sync-metadata-reader) as well in these [resource files](https://github.com/Clovel/shairport-metadata-reader/tree/dev/resources)
+the [shairport-sync metadata reader](https://github.com/mikebrady/shairport-sync-metadata-reader) as well in these [resource files](https://github.com/Clovel/shairport-metadata-reader/tree/dev/resources). Finally, the conversion of the volume information has been taken from [librespot-java](https://github.com/librespot-org/librespot-java).
