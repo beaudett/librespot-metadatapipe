@@ -131,8 +131,9 @@ def handle_event():
             out.write(make_item_xml("core", "minm", meta["title"].encode("utf-8")))
             out.write(make_item_xml("core", "asar", meta["artist"].encode("utf-8")))
             out.write(make_item_xml("core", "asal", meta["album"].encode("utf-8")))
-            if artwork_data:
-                out.write(make_item_xml("ssnc", "PICT", artwork_data))
+	# Does not seem too reliable. Better let owntone search for the picture
+#            if artwork_data:
+#                out.write(make_item_xml("ssnc", "PICT", artwork_data))
         elif volume:
             out.write(make_item_xml("ssnc","pvol",volData.encode("utf-8")))
 
