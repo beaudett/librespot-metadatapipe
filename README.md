@@ -10,7 +10,7 @@ On `track_changed`, it writes
 * Title
 * Artist
 * Album
-* Cover (currently disabled - suspected to cause problems and not really necessary as owntone can download it)
+* Cover 
 
 On `volume` it writes
 * Volume
