@@ -6,6 +6,7 @@ import errno
 import stat
 import base64
 import json
+import fcntl
 from datetime import datetime
 
 
@@ -14,6 +15,8 @@ PIPE_PATH = "/mnt/pipe/spotipipe.metadata"   # FIFO
 OUTPUT_FILE = "/userscripts/shairport-sync-meta.bin"   # file is for debugging
 OUTPUT_MODE = "fifo"                           # "fifo" or "file"
 VOLUME_MAX = 65536
+FIFO_SIZE = 1024 * 1024  # 1 MB
+
 # -----------------------------------
 
 def log(msg):
@@ -35,6 +38,7 @@ def make_item_xml(mtype, code, data_bytes):
         f"<data encoding=\"base64\">\n{encoded}</data>"
         f"</item>\n"
     )
+#    print(item.encode("utf-8"))
     return item.encode("utf-8")
 
 def ensure_output_valid(path, mode):
@@ -115,6 +119,8 @@ def handle_event():
     if OUTPUT_MODE == "fifo":
         try:
             fd = os.open(PIPE_PATH, os.O_WRONLY | os.O_NONBLOCK)
+            new_size = fcntl.fcntl(fd, fcntl.F_SETPIPE_SZ, FIFO_SIZE)
+#            log(f"Requested size: {desired_size}, New size set by kernel: {new_size}")
         except OSError as e:
             if e.errno in (errno.ENXIO, errno.ENOENT):
                 log(f"⚠️ No reader connected to FIFO; skipping write.")
@@ -132,8 +138,8 @@ def handle_event():
             out.write(make_item_xml("core", "asar", meta["artist"].encode("utf-8")))
             out.write(make_item_xml("core", "asal", meta["album"].encode("utf-8")))
 	# Does not seem too reliable. Better let owntone search for the picture
-#            if artwork_data:
-#                out.write(make_item_xml("ssnc", "PICT", artwork_data))
+            if artwork_data:
+                out.write(make_item_xml("ssnc", "PICT", artwork_data))
         elif volume:
             out.write(make_item_xml("ssnc","pvol",volData.encode("utf-8")))
 
