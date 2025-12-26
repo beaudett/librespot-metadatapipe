@@ -72,6 +72,19 @@ def fetch_spotify_metadata(track_id):
         "artwork_url": data.get("thumbnail_url"),
     }
 
+def fetch_spotify_podcast_metadata(track_id):
+    """Fetch track metadata and artwork URL via Spotify's oEmbed API."""
+    url = f"https://open.spotify.com/oembed?url=spotify:episode:{track_id}"
+    with urllib.request.urlopen(url) as resp:
+        data = json.load(resp)
+    
+    return {
+        "title": "Podcast",
+        "artist": "Unknown Podcast author",
+        "artwork_url": data.get("thumbnail_url"),
+    }
+
+
 def download_artwork(url):
     """Download artwork binary data (JPEG/PNG)."""
     with urllib.request.urlopen(url) as resp:
@@ -99,17 +112,30 @@ def handle_event():
         volData = f"{xmlValue:.2f},0.00,0.00,0.00"
 
     # Fetch metadata and artwork
+    isPodcast = False
     if track_id:
         log(f"🎵 Handling event '{event}' for track {track_id}")
         try:
             meta = fetch_spotify_metadata(track_id)
             artwork_data = download_artwork(meta.get("artwork_url", ""))
         except Exception as e:
-            log(f"❌ ERROR fetching metadata or artwork: {e}")
-            return
+            log(f"❌ ERROR fetching metadata or artwork: {e} - trying an episode")
+            try:
+                meta = fetch_spotify_podcast_metadata(track_id)
+                artwork_data = download_artwork(meta.get("artwork_url", ""))
+                isPodcast = True
+            except Exception as e:
+                log(f"❌ ERROR fetching metadata or artwork of the episode: {e}")
+                return
         # Override the information  
-        meta['artist'] = os.environ.get("ALBUM_ARTISTS")
-        meta['album'] = os.environ.get("ALBUM")
+        if os.environ.get("ALBUM_ARTISTS") is not None:
+            meta['artist'] = os.environ.get("ALBUM_ARTISTS")
+        
+        if os.environ.get("ALBUM") is not None:
+            meta['album'] = os.environ.get("ALBUM")
+        else:
+            meta['album'] = "Unknown Album"
+        
         log(f"→ Title:   {meta['title']}")
         log(f"→ Artist:  {meta['artist']}")
         log(f"→ Album:   {meta['album']}")
